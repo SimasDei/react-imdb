@@ -29,8 +29,8 @@ export default function(state = defaultState, action) {
       };
     case LOAD_MORE_MOVIES:
       return {
-        ...sate,
-        movies: [...sate.movies, ...action.payload.results],
+        ...state,
+        movies: [...state.movies, ...action.payload.results],
         currentPage: action.payload.page,
         totalPages: action.payload.total_pages,
         loading: false,
@@ -55,6 +55,8 @@ export default function(state = defaultState, action) {
         loading: true,
       };
     default:
-      return state;
+      return {
+        ...state,
+      };
   }
 }

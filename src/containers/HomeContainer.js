@@ -1,39 +1,52 @@
-class Home extends Component {
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import Home from '../components/Home/Home';
+import {
+  searchMovies,
+  getPopularMovies,
+  loadMoreMovies,
+  clearMovies,
+  showLoadingSpinner,
+} from '../actions';
+
+class HomeContainer extends Component {
   componentDidMount() {
-    if (sessionStorage.getItem('HomeState')) {
-      let state = JSON.parse(sessionStorage.getItem('HomeState'));
-      this.setState({ ...state });
-    } else {
-      this.setState({ loading: true });
-      this.fetchItems(endpoint);
-    }
+    this.getMovies();
   }
 
-  searchItems = searchTerm => {
-    let endpoint = '';
-    this.setState({
-      movies: [],
-      loading: true,
-      searchTerm,
-    });
-
-    this.fetchItems(endpoint);
+  getMovies = () => {
+    this.props.showLoadingSpinner();
+    this.props.getPopularMovies();
   };
 
-  loadMoreItems = () => {
-    // ES6 Destructuring the state
-    const { searchTerm, currentPage } = this.state;
-
-    let endpoint = '';
-    this.setState({ loading: true });
-
-    this.fetchItems(endpoint);
+  searchMovies = searchTerm => {
+    this.props.clearMovies();
+    this.props.searchMovies(searchTerm);
   };
 
-  fetchItems = endpoint => {
-    // ES6 Destructuring the state
-    const { movies, heroImage, searchTerm } = this.state;
+  loadMoreMovies = () => {
+    const { searhTerm, currentPage } = this.props;
+    this.props.showLoadingSpinner();
+    this.props.loadMoreMovies(searhTerm, currentPage);
   };
+
+  render() {
+    return (
+      <Home {...this.props} searchMovies={this.searchMovies} loadMoreMovies={this.loadMoreMovies} />
+    );
+  }
 }
 
-export default Home;
+const mapStateToProps = state => state.home;
+const mapDispatchToProps = {
+  searchMovies,
+  getPopularMovies,
+  loadMoreMovies,
+  clearMovies,
+  showLoadingSpinner,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(HomeContainer);
